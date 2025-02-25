@@ -83,4 +83,11 @@ onMounted(() => {
   justify-content: center;
   gap: 1rem;
 }
+
+@media (max-width: 600px) {
+  .firstTask {
+    flex-direction: column;
+    align-items: center;
+  }
+}
 </style>
