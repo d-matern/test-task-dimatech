@@ -1,33 +1,75 @@
 <script setup lang="ts">
 import CircleProgressBar from '@/components/CircleProgressBar.vue';
+import type { StatusBarType } from '@/models/status-bar.type';
 import { onMounted, onUnmounted, ref } from 'vue';
-const inProgress = ref(false);
-const success = ref(false);
-const warning = ref(false);
-const error = ref(false);
+
+const totalDownload = ref<number>(100);
+const totalDownloaded = ref<number>(0);
+const totalDownloadedWarning = ref<number>(0);
+const totalDownloadedError = ref<number>(0);
+const statusInProgress = ref<StatusBarType>('inProgress');
+const statusSuccess = ref<StatusBarType>('inProgress');
+const statusWarning = ref<StatusBarType>('inProgress');
+const statusError = ref<StatusBarType>('inProgress');
 
 onMounted(() => {
-  const timerInProgressId = setTimeout(() => {
-    inProgress.value = true;
-  }, 1000);
-  const timerId = setTimeout(() => {
-    success.value = true;
-  }, 2000);
+  const intervalDefault = setInterval(() => {
+    totalDownloaded.value += 5;
+
+    if (totalDownloaded.value >= totalDownload.value) {
+      statusSuccess.value = 'success';
+      clearInterval(intervalDefault);
+    }
+  }, 500);
+
+  const intervalWarning = setInterval(() => {
+    totalDownloadedWarning.value += 5;
+
+    if (totalDownloadedWarning.value >= 75) {
+      statusWarning.value = 'warning';
+      clearInterval(intervalWarning);
+    }
+  }, 500);
+
+  const intervalError = setInterval(() => {
+    totalDownloadedError.value += 5;
+
+    if (totalDownloadedError.value >= 55) {
+      statusError.value = 'error';
+      clearInterval(intervalError);
+    }
+  }, 500);
 
   onUnmounted(() => {
-    clearTimeout(timerInProgressId);
-    clearTimeout(timerId);
+    clearInterval(intervalDefault);
+    clearInterval(intervalWarning);
+    clearInterval(intervalError);
   });
 });
 </script>
 
 <template>
   <main :class="$style.firstTask">
+    <CircleProgressBar :totalDownload="totalDownload" :totalDownloaded="totalDownloaded" />
     <CircleProgressBar
-      :in-progress="inProgress"
-      :success="success"
-      :warning="warning"
-      :error="error"
+      :totalDownload="totalDownload"
+      :totalDownloaded="totalDownloaded"
+      :status="statusInProgress"
+    />
+    <CircleProgressBar
+      :totalDownload="totalDownload"
+      :totalDownloaded="totalDownloaded"
+      :status="statusSuccess"
+    />
+    <CircleProgressBar
+      :totalDownload="totalDownload"
+      :totalDownloaded="totalDownloadedWarning"
+      :status="statusWarning"
+    />
+    <CircleProgressBar
+      :totalDownload="totalDownload"
+      :totalDownloaded="totalDownloadedError"
+      :status="statusError"
     />
   </main>
 </template>
@@ -36,6 +78,9 @@ onMounted(() => {
 .firstTask {
   margin-top: 1rem;
   padding: 0 1rem;
-  text-align: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 1rem;
 }
 </style>
