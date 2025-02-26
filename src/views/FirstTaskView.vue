@@ -4,6 +4,7 @@ import type { StatusBarType } from '@/models/status-bar.type';
 import { onMounted, onUnmounted, ref } from 'vue';
 
 const totalDownload = ref<number>(100);
+const totalDownloadedDefault = ref<number>(0);
 const totalDownloaded = ref<number>(0);
 const totalDownloadedWarning = ref<number>(0);
 const totalDownloadedError = ref<number>(0);
@@ -50,27 +51,44 @@ onMounted(() => {
 
 <template>
   <main :class="$style.firstTask">
-    <CircleProgressBar :totalDownload="totalDownload" :totalDownloaded="totalDownloaded" />
-    <CircleProgressBar
-      :totalDownload="totalDownload"
-      :totalDownloaded="totalDownloaded"
-      :status="statusInProgress"
-    />
-    <CircleProgressBar
-      :totalDownload="totalDownload"
-      :totalDownloaded="totalDownloaded"
-      :status="statusSuccess"
-    />
-    <CircleProgressBar
-      :totalDownload="totalDownload"
-      :totalDownloaded="totalDownloadedWarning"
-      :status="statusWarning"
-    />
-    <CircleProgressBar
-      :totalDownload="totalDownload"
-      :totalDownloaded="totalDownloadedError"
-      :status="statusError"
-    />
+    <div>
+      <CircleProgressBar :totalDownload="totalDownload" :totalDownloaded="totalDownloadedDefault" />
+      <CircleProgressBar
+        :totalDownload="totalDownload"
+        :totalDownloaded="totalDownloaded"
+        :status="statusInProgress"
+      />
+      <CircleProgressBar
+        :totalDownload="totalDownload"
+        :totalDownloaded="totalDownloaded"
+        :status="statusSuccess"
+      />
+      <CircleProgressBar
+        :totalDownload="totalDownload"
+        :totalDownloaded="totalDownloadedWarning"
+        :status="statusWarning"
+      />
+      <CircleProgressBar
+        :totalDownload="totalDownload"
+        :totalDownloaded="totalDownloadedError"
+        :status="statusError"
+      />
+    </div>
+
+    <div>
+      <CircleProgressBar
+        type="dashboard"
+        :totalDownload="totalDownload"
+        :totalDownloaded="totalDownloaded"
+        :status="statusInProgress"
+      />
+      <CircleProgressBar
+        type="dashboard"
+        :totalDownload="totalDownload"
+        :totalDownloaded="totalDownloaded"
+        :status="statusSuccess"
+      />
+    </div>
   </main>
 </template>
 
@@ -79,13 +97,20 @@ onMounted(() => {
   margin-top: 1rem;
   padding: 0 1rem;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.firstTask div {
+  display: flex;
   flex-direction: row;
   justify-content: center;
   gap: 1rem;
 }
 
 @media (max-width: 600px) {
-  .firstTask {
+  .firstTask div {
     flex-direction: column;
     align-items: center;
   }
