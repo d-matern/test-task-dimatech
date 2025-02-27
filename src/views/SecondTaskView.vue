@@ -38,6 +38,21 @@ const createChart = () => {
       options: {
         normalized: true,
         animation: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 40,
+              usePointStyle: true,
+              boxWidth: 14,
+              boxHeight: 14,
+              font: {
+                size: 15,
+                lineHeight: 24,
+              },
+            },
+          },
+        },
       },
       data: { ...pieStore.data },
     });
