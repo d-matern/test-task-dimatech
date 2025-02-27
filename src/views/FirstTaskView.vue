@@ -13,6 +13,11 @@ const statusSuccess = ref<StatusBarType>('inProgress');
 const statusWarning = ref<StatusBarType>('inProgress');
 const statusError = ref<StatusBarType>('inProgress');
 
+const totalPowerFirst = ref<number>(100);
+const totalPowerFirstProgress = ref<number>(0);
+const totalPowerSecond = ref<number>(100);
+const totalPowerSecondProgress = ref<number>(0);
+
 onMounted(() => {
   const intervalDefault = setInterval(() => {
     totalDownloaded.value += 5;
@@ -41,10 +46,28 @@ onMounted(() => {
     }
   }, 500);
 
+  const intervalPowerFirst = setInterval(() => {
+    totalPowerFirstProgress.value += 2;
+
+    if (totalPowerFirstProgress.value >= 10) {
+      clearInterval(intervalPowerFirst);
+    }
+  }, 500);
+
+  const intervalPowerSecond = setInterval(() => {
+    totalPowerSecondProgress.value += 5;
+
+    if (totalPowerSecondProgress.value >= 60) {
+      clearInterval(intervalPowerSecond);
+    }
+  }, 500);
+
   onUnmounted(() => {
     clearInterval(intervalDefault);
     clearInterval(intervalWarning);
     clearInterval(intervalError);
+    clearInterval(intervalPowerFirst);
+    clearInterval(intervalPowerSecond);
   });
 });
 </script>
@@ -78,15 +101,15 @@ onMounted(() => {
     <div>
       <CircleProgressBar
         type="dashboard"
-        :totalDownload="totalDownload"
-        :totalDownloaded="totalDownloaded"
-        :status="statusInProgress"
+        :totalDownload="totalPowerFirst"
+        :totalDownloaded="totalPowerFirstProgress"
+        stroke="rgb(245, 108, 109)"
       />
       <CircleProgressBar
         type="dashboard"
-        :totalDownload="totalDownload"
-        :totalDownloaded="totalDownloaded"
-        :status="statusSuccess"
+        :totalDownload="totalPowerSecond"
+        :totalDownloaded="totalPowerSecondProgress"
+        stroke="rgb(28, 138, 247)"
       />
     </div>
   </main>

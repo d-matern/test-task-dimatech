@@ -14,8 +14,9 @@ const props = withDefaults(
     totalDownload: number;
     totalDownloaded: number;
     type?: 'default' | 'dashboard';
-    status?: StatusBarType;
     size?: number;
+    status?: StatusBarType;
+    stroke?: string;
   }>(),
   {
     type: 'default',
@@ -27,7 +28,7 @@ const svgRef = ref<SVGSVGElement | null>(null);
 const svgCircleProgressRef = ref<SVGCircleElement | null>(null);
 
 const progress = computed(() => {
-  if (!props.status) {
+  if (!props.status && props.type === 'default') {
     return 0;
   }
   return +Math.min((props.totalDownloaded / props.totalDownload) * 100, 100).toFixed(0);
@@ -56,7 +57,11 @@ const totalStrokeDashOffset = computed(
     circumference.value -
     (+circumference.value / 100 - strokeDashoffset.value / 100) * progress.value,
 );
-const stroke = computed(() => {
+const strokeInternal = computed(() => {
+  if (props.stroke) {
+    return props.stroke;
+  }
+
   if (props.status === 'success') {
     return 'rgb(18, 206, 102)';
   }
@@ -82,12 +87,12 @@ watch(
     () => svgRef.value,
     () => svgCircleProgressRef.value,
     () => props.status,
-    stroke,
+    strokeInternal,
     totalStrokeDashOffset,
   ],
   ([svg, svgCircleProgress, newStatus, newStroke, newTotalStrokeDashOffset]) => {
     if (svg && svgCircleProgress) {
-      if (newStatus === 'inProgress') {
+      if (newStatus === 'inProgress' || props.type === 'dashboard') {
         if (svg.animationsPaused()) {
           svg.unpauseAnimations();
           return;
@@ -117,7 +122,7 @@ watch(
 );
 
 onMounted(() => {
-  if (svgRef.value) {
+  if (svgRef.value && props.type === 'default') {
     handlePauseAnimation(svgRef.value, 'onMounted');
   }
 });
@@ -137,19 +142,19 @@ onMounted(() => {
     <path
       v-if="status === 'success' && type !== 'dashboard'"
       d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"
-      :fill="stroke"
+      :fill="strokeInternal"
       :transform="pathPosition"
     />
     <path
       v-if="status === 'warning' && type !== 'dashboard'"
       d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"
-      :fill="stroke"
+      :fill="strokeInternal"
       :transform="pathPosition"
     />
     <path
       v-if="status === 'error' && type !== 'dashboard'"
       d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
-      :fill="stroke"
+      :fill="strokeInternal"
       :transform="pathPosition"
       stroke-linecap="round"
     />
@@ -195,6 +200,6 @@ onMounted(() => {
 }
 
 .circleProgressBarCircleMain {
-  transition: stroke-dashoffset 1s ease;
+  transition: stroke-dashoffset 0.5s ease;
 }
 </style>
