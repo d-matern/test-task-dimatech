@@ -45,15 +45,19 @@ export const usePieStore = defineStore('pieStore', () => {
     sectors.value.forEach((s) => {
       result[s.id] = +((s.amount / totalAmount) * 100).toFixed(0);
     });
+    console.log(result);
 
     return result;
   });
 
   const createSector = (payload: SectorType) => {
-    sectors.value.push({
-      id: sectors.value.length + 1,
-      ...payload,
-    });
+    sectors.value = [
+      ...sectors.value,
+      {
+        id: Date.now(),
+        ...payload,
+      },
+    ];
   };
 
   const editSector = (payload: SectorDetailedType) => {
